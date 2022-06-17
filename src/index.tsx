@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import "./assets/styles/custom.scss";
+import "bootstrap/dist/js/bootstrap.min";
+import "jquery";
+import "react-toastify/dist/ReactToastify.min.css";
+import Routes from "./util/routes";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("app")
+        <Routes/>,
+        document.getElementById('app')
 );
