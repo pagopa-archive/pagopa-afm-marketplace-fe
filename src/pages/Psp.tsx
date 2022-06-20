@@ -95,6 +95,14 @@ export default class Psp extends React.Component<IProps, IState> {
         this.setState({showCisBundleModal: false});
     }
 
+    openBundleCreation() {
+        this.setState({showCreateBundleModal: true});
+    }
+
+    closeBundleCreation() {
+        this.setState({showCreateBundleModal: false});
+    }
+
     getBundles() {
         const url = `${this.state.beUrl}/psps/${this.state.code}/bundles`;
         const info = toast.info("Caricamento...");
@@ -294,6 +302,9 @@ export default class Psp extends React.Component<IProps, IState> {
                     </div>
                     <div className="col-md-10">
                         <h3>Lista Pacchetti</h3>
+                    </div>
+                    <div className="col-md-2 text-right">
+                        <Button onClick={this.openBundleCreation}>Nuovo <FaPlus/></Button>
                     </div>
                     <div className="col-md-2 text-right">
                         <Button onClick={this.openBundleCreation}>Nuovo <FaPlus/></Button>
