@@ -1,23 +1,19 @@
 import React from 'react';
-import {Button, Form, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
+import {Button, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
 import {
     FaGlobe,
     FaLock,
     FaLockOpen,
     FaQuestionCircle,
     FaShareSquare,
-    FaCheck,
-    FaEdit,
     FaEye,
     FaPlus,
-    FaSearch,
-    FaSpinner,
-    FaTimes,
     FaTrash
 } from "react-icons/fa";
 import {toast} from "react-toastify";
 import {getConfig} from "../util/config"
 import axios from "axios";
+import CreateBundleModal from "../components/CreateBundleModal";
 
 interface IProps {
     history: {
@@ -26,40 +22,68 @@ interface IProps {
 }
 
 interface IState {
+    beUrl: string;
     code: string;
     bundles: [];
+    showCreateBundleModal: boolean;
 }
 
 export default class Psp extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
+        const baseUrl = getConfig("BE_HOST") as string;
+        const basePath = getConfig("BE_BASEPATH") as string;
+
         this.state = {
             code: "1234567890",
-            bundles: []
+            bundles: [],
+            showCreateBundleModal: false,
+            beUrl: baseUrl + basePath
         };
+
+        this.openBundleCreation = this.openBundleCreation.bind(this);
+        this.closeBundleCreation = this.closeBundleCreation.bind(this);
     }
 
     componentDidMount(): void {
         this.getBundles();
     }
 
+    openBundleCreation() {
+        this.setState({showCreateBundleModal: true});
+    }
+
+    closeBundleCreation() {
+        this.setState({showCreateBundleModal: false});
+    }
+
     getBundles() {
-        const baseUrl = getConfig("BE_HOST") as string;
-        const basePath = getConfig("BE_BASEPATH") as string;
-        const url = `${baseUrl}${basePath}/psps/${this.state.code}/bundles`;
+        const url = `${this.state.beUrl}/psps/${this.state.code}/bundles`;
+        const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
             console.log("response", response)
             if (response.status === 200) {
                 this.setState({bundles: response.data.bundles})
             }
+
+            else {
+                toast.error(response.data.details, {theme: "colored"});
+            }
         }).catch(() => {
             console.error("response")
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info.id);
         });
     }
 
     getDate(date: string) {
         return date == null ? "?" : new Date(date).toLocaleDateString()
+    }
+
+    getLabels(labelList: string) {
+        return labelList.map((label, index) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
     }
 
     getBundleRows() {
@@ -91,16 +115,16 @@ export default class Psp extends React.Component<IProps, IState> {
                     <td className="">{item.minPaymentAmount} / {item.maxPaymentAmount}</td>
                     <td className="">{item.paymentMethod}</td>
                     <td className="">{item.touchpoint}</td>
-                    <td className="">{item.transferCategoryList.join(" ")}</td>
+                    <td className="">{this.getLabels(item.transferCategoryList)}</td>
                     <td className="">{this.getDate(item.validityDateFrom)} - {this.getDate(item.validityDateTo)}</td>
                     <td className="">{this.getDate(item.insertedDate)}</td>
                     <td className="">{this.getDate(item.lastUpdatedDate)}</td>
-                    <td className="">
+                    <td className="text-right">
                         {
                             item.type != "GLOBAL" &&
                             <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
                                 <button className="btn btn-secondary btn-sm mr-1">
-								    <FaEye/>
+								    <FaEye />
 								</button>
 							</OverlayTrigger>
                         }
@@ -122,7 +146,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         }
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
                             <button className="btn btn-danger btn-sm mr-1">
-                                <FaTrash/>
+                                <FaTrash />
                             </button>
                         </OverlayTrigger>
 
@@ -134,16 +158,16 @@ export default class Psp extends React.Component<IProps, IState> {
     render(): React.ReactNode {
 
         return (
-            <div className="container-fluid creditor-institutions">
+            <div className="container-fluid psp">
                 <div className="row">
-                    <div className="col-md-10 mb-3">
-                        <h2>PSP</h2>
+                    <div className="col-md-12 mb-3">
+                        <h2>PSP - {this.state.code}</h2>
                     </div>
-                    {/*<div className="col-md-2 text-right">*/}
-                    {/*    <Button>Nuovo <FaPlus/></Button>*/}
-                    {/*</div>*/}
-                    <div className="col-md-12">
+                    <div className="col-md-10">
                         <h3>Lista Pacchetti</h3>
+                    </div>
+                    <div className="col-md-2 text-right">
+                        <Button onClick={this.openBundleCreation}>Nuovo <FaPlus/></Button>
                     </div>
                     <div className="col-md-12">
                         <Table hover responsive size="sm" className="xsd-table">
@@ -159,21 +183,18 @@ export default class Psp extends React.Component<IProps, IState> {
                                 <th className="">Tassonomia</th>
                                 <th className="">Validità (da/a)</th>
                                 <th className="">Inserimento</th>
-                                <th className="">Ultimo aggiornamento</th>
-                                <th className=""></th>
+                                <th className="">Aggiornamento</th>
+                                <th className="text-right" />
                             </tr>
                             </thead>
                             <tbody>
-                            {this.getBundleRows()}
-                            <tr>
-                            </tr>
-
+                                {this.getBundleRows()}
                             </tbody>
                         </Table>
                     </div>
                 </div>
-
+                <CreateBundleModal beUrl={this.state.beUrl} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
             </div>
-        );
+        )
     }
 }
