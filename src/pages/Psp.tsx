@@ -293,6 +293,62 @@ export default class Psp extends React.Component<IProps, IState> {
                     </td>
                 </tr>
         ))
+    }
+
+    getStatus(accepted: string, rejected: string) {
+        if (accepted == null && rejected == null) {
+            return "-";
+        }
+        else if (accepted != null && rejected == null) {
+            return <span><FaCheck className="text-success" /> {this.getDate(accepted)}</span>;
+        }
+        else if (accepted == null && rejected != null) {
+            return <span><FaTimes className="text-danger" /> {this.getDate(rejected)}</span>;
+        }
+        return date == null ? "?" : new Date(date).toLocaleDateString()
+    }
+
+    setRequestStatus(idBundleRequest:string, status: string) {
+        const url = `${this.state.beUrl}/psps/${this.state.code}/requests/${idBundleRequest}/${status}`;
+        const info = toast.info("Operazione in corso...");
+        axios.post(url).then((response:any) => {
+            if (response.status != 200) {
+                toast.error(response.data.details, {theme: "colored"});
+            }
+        }).catch(() => {
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info);
+            this.getBundleRequests();
+        });
+    }
+
+    getBundleRequestRows() {
+        return this.state.bundleRequests.map((item: any, index: number) => (
+                <tr key={index}>
+                    <td className="">{item.idBundle}</td>
+                    <td className="">{item.ciFiscalCode}</td>
+                    <td className=""><pre className="code">{JSON.stringify(item.ciBundleAttributes)}</pre></td>
+                    <td className="">{this.getStatus(item.acceptedDate, item.rejectionDate)}</td>
+                    <td className="text-right">
+                        {
+                            item.acceptedDate == null && item.rejectionDate == null &&
+                            <>
+                                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Accetta</Tooltip>}>
+                                    <button className="btn btn-success btn-sm mr-1" onClick={() => this.setRequestStatus(item.idBundleRequest, "accept")}>
+                                        <FaCheck />
+                                    </button>
+                                </OverlayTrigger>
+                                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Rifiuta</Tooltip>}>
+                                    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.setRequestStatus(item.idBundleRequest, "reject")}>
+                                        <FaTimes />
+                                    </button>
+                                </OverlayTrigger>
+                            </>
+                        }
+                    </td>
+                </tr>
+        ))
 
     }
 
