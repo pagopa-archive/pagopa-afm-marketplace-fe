@@ -14,6 +14,7 @@ import {toast} from "react-toastify";
 import {getConfig} from "../util/config"
 import axios from "axios";
 import CreateBundleModal from "../components/CreateBundleModal";
+import BundleOfferModal from "../components/BundleOfferModal";
 
 interface IProps {
     history: {
@@ -40,8 +41,12 @@ export default class Psp extends React.Component<IProps, IState> {
             code: code,
             bundles: [],
             showCreateBundleModal: false,
+            showOfferBundleModal: false,
+            showCisBundleModal: false,
             beUrl: baseUrl + basePath,
-            createBundle: `${baseUrl}${basePath}/psps/${code}/bundles`
+            createBundle: `${baseUrl}${basePath}/psps/${code}/bundles`,
+            offerBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/offers`,
+            cisBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/creditorinstitutions`
         };
 
         this.openBundleCreation = this.openBundleCreation.bind(this);
@@ -60,6 +65,24 @@ export default class Psp extends React.Component<IProps, IState> {
         if (status === "ok") {
             this.getBundles();
         }
+    }
+
+    openOfferBundle(idBundle: string) {
+        const offerBundle = this.state.offerBundle.replace("IDBUNDLE", idBundle);
+        this.setState({offerBundle, showOfferBundleModal: true});
+    }
+
+    closeBundleOffer = (status: string) => {
+        this.setState({showOfferBundleModal: false});
+    }
+
+    openCisBundle(idBundle: string) {
+        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", idBundle);
+        this.setState({cisBundle, showCisBundleModal: true});
+    }
+
+    closeCisBundle = (status: string) => {
+        this.setState({showCisBundleModal: false});
     }
 
     getBundles() {
@@ -142,7 +165,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         {
                             item.type != "GLOBAL" &&
                             <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
-                                <button className="btn btn-secondary btn-sm mr-1">
+                                <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item.idBundle)}>
 								    <FaEye />
 								</button>
 							</OverlayTrigger>
@@ -150,7 +173,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         {
                             item.type === "PRIVATE" &&
 							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Offri ad EC</Tooltip>}>
-                                <button className="btn btn-primary btn-sm mr-1">
+                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item.idBundle)}>
 									<FaShareSquare />
                                 </button>
                             </OverlayTrigger>
@@ -213,6 +236,7 @@ export default class Psp extends React.Component<IProps, IState> {
                     </div>
                 </div>
                 <CreateBundleModal beUrl={this.state.createBundle} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
+                <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />
             </div>
         )
     }

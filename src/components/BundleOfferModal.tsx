@@ -17,7 +17,7 @@ interface IState {
     content: any;
 }
 
-export default class CreateBundleModal extends React.Component<IProps, IState> {
+export default class BundleOfferModal extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
@@ -38,23 +38,16 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
 
     initializeContent() {
         const content = {
-            "name": "Nome pacchetto",
-            "description": "Descrizione",
-            "paymentAmount": 100,
-            "minPaymentAmount": 0,
-            "maxPaymentAmount": 100,
-            "paymentMethod": "CP",
-            "touchpoint": "IO",
-            "type": "GLOBAL",
-            "transferCategoryList": [],
-            "validityDateFrom": null,
-            "validityDateTo": null
+            "ciFiscalCodeList": [
+                "fiscalCode1",
+                "fiscalCode2",
+            ]
         };
         this.setState({content});
     }
 
     save() {
-        const info = toast.info("Salvataggio...");
+        const info = toast.info("Invio offerta...");
         axios.post(this.props.beUrl, this.state.content).then((response:any) => {
             if (response.status === 201) {
                 this.props.handleClose("ok");
