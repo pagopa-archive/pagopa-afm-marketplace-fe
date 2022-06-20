@@ -25,6 +25,8 @@
     "date-fns": "^2.16.1",
     "generated": "^0.0.3",
     "i18next": "^19.8.4",
+    "jsoneditor": "^9.9.0",
+    "jsoneditor-react": "^3.1.2",
     "react": "17.0.1",
     "react-bootstrap": "^1.6.4",
     "react-dom": "^17.0.2",

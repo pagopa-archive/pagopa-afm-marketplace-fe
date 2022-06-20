@@ -24,6 +24,7 @@ interface IProps {
 interface IState {
     beUrl: string;
     code: string;
+    createBundle: string;
     bundles: [];
     showCreateBundleModal: boolean;
 }
@@ -34,16 +35,16 @@ export default class Psp extends React.Component<IProps, IState> {
 
         const baseUrl = getConfig("BE_HOST") as string;
         const basePath = getConfig("BE_BASEPATH") as string;
-
+        const code = "1234567890";
         this.state = {
-            code: "1234567890",
+            code: code,
             bundles: [],
             showCreateBundleModal: false,
-            beUrl: baseUrl + basePath
+            beUrl: baseUrl + basePath,
+            createBundle: `${baseUrl}${basePath}/psps/${code}/bundles`
         };
 
         this.openBundleCreation = this.openBundleCreation.bind(this);
-        this.closeBundleCreation = this.closeBundleCreation.bind(this);
     }
 
     componentDidMount(): void {
@@ -54,19 +55,20 @@ export default class Psp extends React.Component<IProps, IState> {
         this.setState({showCreateBundleModal: true});
     }
 
-    closeBundleCreation() {
+    closeBundleCreation = (status: string) => {
         this.setState({showCreateBundleModal: false});
+        if (status === "ok") {
+            this.getBundles();
+        }
     }
 
     getBundles() {
         const url = `${this.state.beUrl}/psps/${this.state.code}/bundles`;
         const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
-            console.log("response", response)
             if (response.status === 200) {
                 this.setState({bundles: response.data.bundles})
             }
-
             else {
                 toast.error(response.data.details, {theme: "colored"});
             }
@@ -74,7 +76,24 @@ export default class Psp extends React.Component<IProps, IState> {
             console.error("response")
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
         }).finally(() => {
-            toast.dismiss(info.id);
+            toast.dismiss(info);
+        });
+    }
+
+    removeBundle(idBundle: string) {
+        const url = `${this.state.beUrl}/psps/${this.state.code}/bundles/${idBundle}`;
+        const info = toast.info("Rimozione in corso...");
+        axios.delete(url).then((response:any) => {
+            if (response.status === 200) {
+                this.getBundles()
+            }
+            else {
+                toast.error(response.data.details, {theme: "colored"});
+            }
+        }).catch(() => {
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info);
         });
     }
 
@@ -145,7 +164,7 @@ export default class Psp extends React.Component<IProps, IState> {
 							</OverlayTrigger>
                         }
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
-                            <button className="btn btn-danger btn-sm mr-1">
+                            <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>
                                 <FaTrash />
                             </button>
                         </OverlayTrigger>
@@ -193,7 +212,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         </Table>
                     </div>
                 </div>
-                <CreateBundleModal beUrl={this.state.beUrl} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
+                <CreateBundleModal beUrl={this.state.createBundle} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
             </div>
         )
     }

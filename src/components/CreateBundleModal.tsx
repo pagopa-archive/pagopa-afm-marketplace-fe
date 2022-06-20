@@ -1,6 +1,8 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
-
+import { JsonEditor as Editor } from 'jsoneditor-react';
+import {toast} from "react-toastify";
+import axios from "axios";
 
 interface IProps {
     beUrl: string;
@@ -29,6 +31,10 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
         this.initializeContent();
     }
 
+    handleChange(content: any): void {
+        this.setState({content});
+    }
+
     initializeContent() {
         const content = {
             "name": "Nome pacchetto",
@@ -37,7 +43,7 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
             "minPaymentAmount": 0,
             "maxPaymentAmount": 100,
             "paymentMethod": "CP",
-            "touchpoint": "",
+            "touchpoint": "IO",
             "type": "GLOBAL",
             "transferCategoryList": [],
             "validityDateFrom": null,
@@ -46,26 +52,31 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
         this.setState({content});
     }
 
-    handleChange(event: any) {
-        console.log("HANDLE CHANGE", event);
-    }
-
     save() {
-        console.log("SAVEEE", this.state.beUrl);
-        this.props.handleClose("ok");
+        const info = toast.info("Salvataggio...");
+        axios.post(this.props.beUrl, this.state.content).then((response:any) => {
+            console.log("response", response)
+            if (response.status === 201) {
+                this.props.handleClose("ok");
+            }
+            else {
+                toast.error(response.data.details, {theme: "colored"});
+            }
+        }).catch(() => {
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info);
+        });
     }
 
     render(): React.ReactNode {
         return (
-            <Modal show={this.props.show} onHide={() => this.props.handleClose("ko")}>
+            <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea pacchetto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <pre className="code" onChange={(event) => this.handleChange(event)}>
-                        {JSON.stringify(this.state.content, undefined, 2)}
-                    </pre>
-
+                    <Editor value={this.state.content} onChange={this.handleChange} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => this.props.handleClose("ko")}>
