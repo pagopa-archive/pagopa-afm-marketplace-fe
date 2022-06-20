@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
+// @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
 import axios from "axios";
