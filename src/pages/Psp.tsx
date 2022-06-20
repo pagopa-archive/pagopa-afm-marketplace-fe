@@ -99,8 +99,11 @@ export default class Psp extends React.Component<IProps, IState> {
         this.setState({showCreateBundleModal: true});
     }
 
-    closeBundleCreation() {
+    closeBundleCreation = (status: string) => {
         this.setState({showCreateBundleModal: false});
+        if (status === "ok") {
+            this.getBundles();
+        }
     }
 
     getBundles() {

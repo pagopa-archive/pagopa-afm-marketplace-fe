@@ -1,6 +1,5 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
-// @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
 import axios from "axios";
@@ -51,6 +50,10 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
             "validityDateTo": null
         };
         this.setState({content});
+    }
+
+    handleChange(event: any) {
+        console.log("HANDLE CHANGE", event);
     }
 
     save() {
