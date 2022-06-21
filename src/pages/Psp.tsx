@@ -7,7 +7,6 @@ import {
     FaLock,
     FaLockOpen,
     FaPlus,
-    FaQuestionCircle,
     FaShareSquare,
     FaTimes,
     FaTrash,
@@ -152,6 +151,10 @@ export default class Psp extends React.Component<IProps, IState> {
         return date == null ? "?" : new Date(date).toLocaleDateString()
     }
 
+    getAmount(amount: number) {
+        return (amount / 100).toFixed(2);
+    }
+
     getLabels(labelList: any) {
         return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
     }
@@ -181,8 +184,8 @@ export default class Psp extends React.Component<IProps, IState> {
 							</OverlayTrigger>
                         }
                     </td>
-                    <td className="">{item.paymentAmount}</td>
-                    <td className="">{item.minPaymentAmount} / {item.maxPaymentAmount}</td>
+                    <td className="">{this.getAmount(item.paymentAmount)}</td>
+                    <td className="">{this.getAmount(item.minPaymentAmount)} / {this.getAmount(item.maxPaymentAmount)}</td>
                     <td className="">{item.paymentMethod}</td>
                     <td className="">{item.touchpoint}</td>
                     <td className="">{this.getLabels(item.transferCategoryList)}</td>
@@ -235,7 +238,7 @@ export default class Psp extends React.Component<IProps, IState> {
         else if (accepted == null && rejected != null) {
             return <span><FaTimes className="text-danger" /> {this.getDate(rejected)}</span>;
         }
-        return date == null ? "?" : new Date(date).toLocaleDateString()
+        return "-";
     }
 
     setRequestStatus(idBundleRequest:string, status: string) {
@@ -302,7 +305,7 @@ export default class Psp extends React.Component<IProps, IState> {
                                 <th className="">Nome</th>
                                 <th className="">Descrizione</th>
                                 <th className="">Tipo</th>
-                                <th className="">Importo</th>
+                                <th className="">Commissione</th>
                                 <th className="">Fascia</th>
                                 <th className="">Metodo Pagamento</th>
                                 <th className="">Touchpoint</th>

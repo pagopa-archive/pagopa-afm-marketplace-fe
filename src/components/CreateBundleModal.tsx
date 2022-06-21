@@ -42,7 +42,7 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
             "description": "Descrizione",
             "paymentAmount": 100,
             "minPaymentAmount": 0,
-            "maxPaymentAmount": 100,
+            "maxPaymentAmount": 10000,
             "paymentMethod": "CP",
             "touchpoint": "IO",
             "type": "GLOBAL",
