@@ -9,6 +9,7 @@
     "prebuild": "npm-run-all prebuild:*",
     "prebuild:clean": "shx rm -rf build",
     "prebuild:tsc": "tsc --noEmit",
+    "prebuild:envconfig": "npm-run-all envconfig",
     "build": "parcel build src/index.html --dist-dir build/release --public-url ./ --no-optimize",
     "test": "jest --coverage --ci --testResultsProcessor jest-sonar-reporter",
     "test_old": "jest --coverage --ci",

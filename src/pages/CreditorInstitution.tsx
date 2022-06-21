@@ -1,16 +1,4 @@
 import React from 'react';
-import {Button, Form, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
-import {
-    FaCheck,
-    FaEdit,
-    FaEye,
-    FaPlus,
-    FaSearch,
-    FaSpinner,
-    FaTimes,
-    FaTrash
-} from "react-icons/fa";
-import {toast} from "react-toastify";
 
 interface IProps {
     history: {
@@ -22,7 +10,6 @@ interface IState {
 }
 
 export default class CreditorInstitution extends React.Component<IProps, IState> {
-    // static contextType = MsalContext;
 
     constructor(props: IProps) {
         super(props);
