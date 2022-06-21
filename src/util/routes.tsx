@@ -13,7 +13,7 @@ export default class Routes extends React.Component {
                 <Route render={(props)=>(
                     <Layout {...props}>
                         <Switch>
-                            <Route path="/" exact component={CreditorInstitution}/>
+                            <Route path="/" exact component={Psp}/>
                             <Route path="/cis" exact component={CreditorInstitution}/>
                             <Route path="/psps" exact component={Psp}/>
                             <Route component={NotFound}/>
