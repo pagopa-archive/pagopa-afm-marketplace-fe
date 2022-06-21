@@ -114,7 +114,7 @@ export default class Psp extends React.Component<IProps, IState> {
                 this.setState({bundles: response.data.bundles})
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             console.error("response")
@@ -132,7 +132,7 @@ export default class Psp extends React.Component<IProps, IState> {
                 this.getBundles()
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -149,7 +149,7 @@ export default class Psp extends React.Component<IProps, IState> {
                 this.setState({bundleRequests: response.data.requests})
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -257,7 +257,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
             if (response.status != 200) {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});

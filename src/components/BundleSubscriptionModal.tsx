@@ -52,7 +52,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
                 this.props.handleClose("ok");
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});

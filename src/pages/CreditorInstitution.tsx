@@ -7,7 +7,6 @@ import {
     FaLock,
     FaLockOpen,
     FaPlus,
-    FaShareSquare,
     FaTimes,
     FaTrash,
 } from "react-icons/fa";
@@ -28,7 +27,7 @@ interface IProps {
 interface IState {
     beUrl: string;
     code: string;
-    cisBundle: string;
+    bundleAttributes: string;
     getBundles: string;
     getBundleOffers: string;
     bundles: [];
@@ -53,7 +52,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
             showBundleSubscriptionModal: false,
             showOfferBundleModal: false,
             beUrl: baseUrl + basePath,
-            cisBundle: `${baseUrl}${basePath}/cis/${code}/bundles/IDBUNDLE/creditorInstitutions`,
+            bundleAttributes: `${baseUrl}${basePath}/cis/${code}/bundles/IDBUNDLE/attributes`,
             getBundles: `${baseUrl}${basePath}/cis/${code}/bundles`,
             getBundleOffers: `${baseUrl}${basePath}/cis/${code}/offers`,
         };
@@ -68,7 +67,9 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     }
 
     openBundleSubscription() {
-        this.setState({showBundleSubscriptionModal: true});
+        const globalIdBundle = "1fd68a6c-1bc1-4517-95eb-43623afa64dc";
+        const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", globalIdBundle);
+        this.setState({bundleAttributes, showBundleSubscriptionModal: true});
     }
 
     closeBundleSubscription = (status: string) => {
@@ -88,8 +89,8 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     }
 
     openCisBundle(idBundle: string) {
-        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", idBundle);
-        this.setState({cisBundle, showCisBundleModal: true});
+        const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", idBundle);
+        this.setState({bundleAttributes, showCisBundleModal: true});
     }
 
     closeCisBundle = () => {
@@ -103,7 +104,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                 this.setState({bundles: response.data.bundles})
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -112,21 +113,22 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         });
     }
 
-    removeBundle(idBundle: string) {
-        const url = `${this.state.beUrl}/psps/${this.state.code}/bundles/${idBundle}`;
-        const info = toast.info("Rimozione in corso...");
-        axios.delete(url).then((response:any) => {
-            if (response.status === 200) {
-                this.getBundles()
-            }
-            else {
-                toast.error(response.data.details, {theme: "colored"});
-            }
-        }).catch(() => {
-            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
-        }).finally(() => {
-            toast.dismiss(info);
-        });
+    removeBundle(idBundleOffer: string) {
+        console.log("TODO remove bundle offer", idBundleOffer);
+        // const url = `${this.state.beUrl}/psps/${this.state.code}/bundles/${idBundle}`;
+        // const info = toast.info("Rimozione in corso...");
+        // axios.delete(url).then((response:any) => {
+        //     if (response.status === 200) {
+        //         this.getBundles()
+        //     }
+        //     else {
+        //         toast.error(response.data.detail, {theme: "colored"});
+        //     }
+        // }).catch(() => {
+        //     toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        // }).finally(() => {
+        //     toast.dismiss(info);
+        // });
     }
 
     getBundleOffers() {
@@ -136,7 +138,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                 this.setState({bundleOffers: response.data.offers[0]})
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -200,14 +202,6 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
 								</button>
 							</OverlayTrigger>
                         }
-                        {
-                            item.type === "PRIVATE" &&
-							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Offri ad EC</Tooltip>}>
-                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item.idBundle)}>
-									<FaShareSquare />
-                                </button>
-                            </OverlayTrigger>
-                        }
                         {/*{*/}
                         {/*    item.type === "PUBLIC" &&*/}
 						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
@@ -245,7 +239,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
             if (response.status != 200) {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -349,7 +343,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                         }
                     </div>
                 </div>
-                <BundleSubscriptionModal beUrl={this.state.getBundleOffers} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
+                <BundleSubscriptionModal beUrl={this.state.bundleAttributes} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
                 {/*<BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />*/}
                 {/*<CisBundleModal beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />*/}
             </div>
