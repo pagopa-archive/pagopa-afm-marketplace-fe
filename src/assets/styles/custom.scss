@@ -211,8 +211,9 @@ $text-color: #17324d;
   border-radius: 0;
 }
 
-.creditor-institutions {
-  .fixed-td-width {
-    width: 35%;
-  }
+pre.code {
+  background-color: #333;
+  color: #fff;
+  word-wrap: break-word;
+  white-space: pre-wrap
 }
