@@ -1,12 +1,10 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
 // @ts-ignore
-import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
 import axios from "axios";
 
 interface IProps {
-    bundle: any;
     beUrl: string;
     show: boolean;
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -19,7 +17,7 @@ interface IState {
     details: any;
 }
 
-export default class CisBundleModal extends React.Component<IProps, IState> {
+export default class CiBundleDetailsModal extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
@@ -29,7 +27,7 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
         }
 
         this.handleChange = this.handleChange.bind(this);
-        this.handleChangeDetails = this.handleChangeDetails.bind(this);
+        this.removeAll = this.removeAll.bind(this);
         this.loading = this.loading.bind(this);
     }
 
@@ -38,31 +36,6 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
         axios.get(this.props.beUrl).then((response:any) => {
             if (response.status === 200) {
                 this.handleChange(response.data);
-                response.data.ciFiscalCodeList.forEach((ciFiscalCode: string) => this.retrieveDetails(ciFiscalCode));
-            }
-            else {
-                if (this.props.bundle.type === "GLOBAL") {
-                    const content = {
-                        status: "Tutti gli EC fanno parte di questo pacchetto. Nessun EC ha aggiunto attributi personalizzati."
-                    }
-                    this.handleChange(content);
-                }
-                else {
-                    toast.error(response.data.details, {theme: "colored"});
-                }
-            }
-        }).catch(() => {
-            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
-        }).finally(() => {
-            toast.dismiss(info);
-        });
-    }
-
-    retrieveDetails(ciFiscalCode: string) {
-        const info = toast.info("Caricamento dettagli...");
-        axios.get(`${this.props.beUrl}/${ciFiscalCode}`).then((response:any) => {
-            if (response.status === 200) {
-                this.handleChangeDetails(response.data);
             }
             else {
                 toast.error(response.data.details, {theme: "colored"});
@@ -78,20 +51,34 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
         this.setState({content});
     }
 
-    handleChangeDetails(details: any): void {
-        this.setState({details});
+    remove(idBundleAttribute: string) {
+        const url = `${this.props.beUrl}/${idBundleAttribute}`;
+        return axios.delete(url);
+    }
+
+    removeAll(): void {
+        axios.all(this.state.content.attributes.map((attribute: any) => this.remove(attribute.idBundleAttribute))).then(
+            () => {
+                this.props.handleClose("ok");
+            }
+        )
     }
 
     render(): React.ReactNode {
         return (
             <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")} onShow={this.loading}>
                 <Modal.Header closeButton>
-                    <Modal.Title>EC aderenti</Modal.Title>
+                    <Modal.Title>Dettagli pacchetto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <pre className="code">{JSON.stringify(this.state.content, undefined, 2)}</pre>
-                    <h4>Dettagli pacchetto</h4>
-                    <pre className="code">{JSON.stringify(this.state.details, undefined, 2)}</pre>
+
+                    <div className={"text-right"}>
+                        <Button variant="danger" onClick={this.removeAll}>
+                            Cancella attributi
+                        </Button>
+                    </div>
+
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => this.props.handleClose("ko")}>

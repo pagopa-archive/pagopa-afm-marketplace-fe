@@ -26,11 +26,12 @@ interface IProps {
 
 interface IState {
     beUrl: string;
+    bundle: any,
+    bundles: [];
     code: string;
     cisBundle: string;
     createBundle: string;
     offerBundle: string;
-    bundles: [];
     bundleRequests: [];
     showCisBundleModal: boolean;
     showCreateBundleModal: boolean;
@@ -46,6 +47,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const code = "1234567890";
         this.state = {
             code: code,
+            bundle: null,
             bundles: [],
             bundleRequests: [],
             showCisBundleModal: false,
@@ -86,13 +88,13 @@ export default class Psp extends React.Component<IProps, IState> {
         this.setState({showOfferBundleModal: false});
     }
 
-    openCisBundle(idBundle: string) {
-        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", idBundle);
-        this.setState({cisBundle, showCisBundleModal: true});
+    openCisBundle(bundle: any) {
+        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", bundle.idBundle);
+        this.setState({cisBundle, bundle, showCisBundleModal: true});
     }
 
     closeCisBundle = () => {
-        this.setState({showCisBundleModal: false});
+        this.setState({bundle: null, showCisBundleModal: false});
     }
 
     openBundleCreation() {
@@ -204,14 +206,11 @@ export default class Psp extends React.Component<IProps, IState> {
                     <td className="">{this.getDate(item.insertedDate)}</td>
                     <td className="">{this.getDate(item.lastUpdatedDate)}</td>
                     <td className="text-right">
-                        {
-                            item.type != "GLOBAL" &&
-                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
-                                <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item.idBundle)}>
-								    <FaEye />
-								</button>
-							</OverlayTrigger>
-                        }
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
+                            <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item)}>
+                                <FaEye />
+                            </button>
+                        </OverlayTrigger>
                         {
                             item.type === "PRIVATE" &&
 							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Offri ad EC</Tooltip>}>
@@ -421,7 +420,7 @@ export default class Psp extends React.Component<IProps, IState> {
                 </div>
                 <CreateBundleModal beUrl={this.state.createBundle} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
                 <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />
-                <CisBundleModal beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
+                <CisBundleModal bundle={this.state.bundle} beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
             </div>
         )
     }

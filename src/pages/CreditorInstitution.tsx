@@ -8,15 +8,12 @@ import {
     FaLockOpen,
     FaPlus,
     FaTimes,
-    FaTrash,
 } from "react-icons/fa";
 import {toast} from "react-toastify";
 import {getConfig} from "../util/config"
 import axios from "axios";
-// import CreateBundleModal from "../components/CreateBundleModal";
-// import BundleOfferModal from "../components/BundleOfferModal";
-// import CisBundleModal from "../components/CisBundleModal";
 import BundleSubscriptionModal from "../components/BundleSubscriptionModal";
+import CiBundleDetailsModal from "../components/CiBundleDetailsModal";
 
 interface IProps {
     history: {
@@ -32,7 +29,7 @@ interface IState {
     getBundleOffers: string;
     bundles: [];
     bundleOffers: [];
-    showCisBundleModal: boolean;
+    showCiBundleDetailsModal: boolean;
     showBundleSubscriptionModal: boolean;
     showOfferBundleModal: boolean;
 }
@@ -48,7 +45,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
             code: code,
             bundles: [],
             bundleOffers: [],
-            showCisBundleModal: false,
+            showCiBundleDetailsModal: false,
             showBundleSubscriptionModal: false,
             showOfferBundleModal: false,
             beUrl: baseUrl + basePath,
@@ -67,9 +64,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     }
 
     openBundleSubscription() {
-        const globalIdBundle = "1fd68a6c-1bc1-4517-95eb-43623afa64dc";
-        const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", globalIdBundle);
-        this.setState({bundleAttributes, showBundleSubscriptionModal: true});
+        this.setState({showBundleSubscriptionModal: true});
     }
 
     closeBundleSubscription = (status: string) => {
@@ -79,22 +74,16 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         }
     }
 
-    openOfferBundle(idBundle: string) {
-        const getBundleOffers = this.state.getBundleOffers.replace("IDBUNDLE", idBundle);
-        this.setState({getBundleOffers, showOfferBundleModal: true});
-    }
-
-    closeBundleOffer = () => {
-        this.setState({showOfferBundleModal: false});
-    }
-
-    openCisBundle(idBundle: string) {
+    openCiBundleDetails(idBundle: string) {
         const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", idBundle);
-        this.setState({bundleAttributes, showCisBundleModal: true});
+        this.setState({bundleAttributes, showCiBundleDetailsModal: true});
     }
 
-    closeCisBundle = () => {
-        this.setState({showCisBundleModal: false});
+    closeCiBundleDetails = (status: string) => {
+        this.setState({showCiBundleDetailsModal: false});
+        if (status === "ok") {
+            this.getBundles();
+        }
     }
 
     getBundles() {
@@ -135,7 +124,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const info = toast.info("Caricamento...");
         axios.get(this.state.getBundleOffers).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundleOffers: response.data.offers[0]})
+                this.setState({bundleOffers: response.data.offers})
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -161,63 +150,63 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
 
     getBundleRows() {
         return this.state.bundles.map((item: any, index: number) => (
-                <tr key={index}>
-                    <td className="">{item.idPsp}</td>
-                    <td className="">{item.name}</td>
-                    <td className="">{item.description}</td>
-                    <td className="">
-                        {
-                            item.type === "GLOBAL" &&
-                                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Globale</Tooltip>}>
-                                    <FaGlobe />
-                                </OverlayTrigger>
-                        }
-                        {
-                            item.type === "PUBLIC" &&
-							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Pubblico</Tooltip>}>
-								<FaLockOpen className="mr-1"/>
-							</OverlayTrigger>
-                        }
-                        {
-                            item.type === "PRIVATE" &&
-							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Privato</Tooltip>}>
-								<FaLock className="mr-1"/>
-							</OverlayTrigger>
-                        }
-                    </td>
-                    <td className="">{this.getAmount(item.paymentAmount)}</td>
-                    <td className="">{this.getAmount(item.minPaymentAmount)} / {this.getAmount(item.maxPaymentAmount)}</td>
-                    <td className="">{item.paymentMethod}</td>
-                    <td className="">{item.touchpoint}</td>
-                    <td className="">{this.getLabels(item.transferCategoryList)}</td>
-                    <td className="">{this.getDate(item.validityDateFrom)} - {this.getDate(item.validityDateTo)}</td>
-                    <td className="">{this.getDate(item.insertedDate)}</td>
-                    <td className="">{this.getDate(item.lastUpdatedDate)}</td>
-                    <td className="text-right">
-                        {
-                            item.type != "PRIVATE" &&
-                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Gestisci attributi</Tooltip>}>
-                                <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item.idBundle)}>
-								    <FaCogs />
-								</button>
-							</OverlayTrigger>
-                        }
-                        {/*{*/}
-                        {/*    item.type === "PUBLIC" &&*/}
-						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
-                        {/*        <button className="btn btn-primary btn-sm mr-1">*/}
-						{/*			<FaQuestionCircle />*/}
-                        {/*        </button>*/}
-						{/*	</OverlayTrigger>*/}
-                        {/*}*/}
-                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
-                            <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>
-                                <FaTrash />
+            <tr key={index}>
+                <td className="">{item.idPsp}</td>
+                <td className="">{item.name}</td>
+                <td className="">{item.description}</td>
+                <td className="">
+                    {
+                        item.type === "GLOBAL" &&
+                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Globale</Tooltip>}>
+                                <FaGlobe />
+                            </OverlayTrigger>
+                    }
+                    {
+                        item.type === "PUBLIC" &&
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Pubblico</Tooltip>}>
+                            <FaLockOpen className="mr-1"/>
+                        </OverlayTrigger>
+                    }
+                    {
+                        item.type === "PRIVATE" &&
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Privato</Tooltip>}>
+                            <FaLock className="mr-1"/>
+                        </OverlayTrigger>
+                    }
+                </td>
+                <td className="">{this.getAmount(item.paymentAmount)}</td>
+                <td className="">{this.getAmount(item.minPaymentAmount)} / {this.getAmount(item.maxPaymentAmount)}</td>
+                <td className="">{item.paymentMethod}</td>
+                <td className="">{item.touchpoint}</td>
+                <td className="">{this.getLabels(item.transferCategoryList)}</td>
+                <td className="">{this.getDate(item.validityDateFrom)} - {this.getDate(item.validityDateTo)}</td>
+                <td className="">{this.getDate(item.insertedDate)}</td>
+                <td className="">{this.getDate(item.lastUpdatedDate)}</td>
+                <td className="text-right">
+                    {
+                        item.type != "PRIVATE" &&
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Gestisci attributi</Tooltip>}>
+                            <button disabled={item.validityDateTo != null} className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCiBundleDetails(item.idBundle)}>
+                                <FaCogs />
                             </button>
                         </OverlayTrigger>
+                    }
+                    {/*{*/}
+                    {/*    item.type === "PUBLIC" &&*/}
+                    {/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
+                    {/*        <button className="btn btn-primary btn-sm mr-1">*/}
+                    {/*			<FaQuestionCircle />*/}
+                    {/*        </button>*/}
+                    {/*	</OverlayTrigger>*/}
+                    {/*}*/}
+                    {/*<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>*/}
+                    {/*    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>*/}
+                    {/*        <FaTrash />*/}
+                    {/*    </button>*/}
+                    {/*</OverlayTrigger>*/}
 
-                    </td>
-                </tr>
+                </td>
+            </tr>
         ))
     }
 
@@ -251,31 +240,30 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
 
     getBundleOfferRows() {
         return this.state.bundleOffers.map((item: any, index: number) => (
-                <tr key={index}>
-                    <td className="">{item.idBundle}</td>
-                    <td className="">{item.idPsp}</td>
-                    <td className="">{this.getDate(item.insertedDate)}</td>
-                    <td className="">{this.getStatus(item.acceptedDate, item.rejectionDate)}</td>
-                    <td className="text-right">
-                        {
-                            item.acceptedDate == null && item.rejectionDate == null &&
-                            <>
-                                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Accetta</Tooltip>}>
-                                    <button className="btn btn-success btn-sm mr-1" onClick={() => this.setOfferStatus(item.idBundleOffer, "accept")}>
-                                        <FaCheck />
-                                    </button>
-                                </OverlayTrigger>
-                                <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Rifiuta</Tooltip>}>
-                                    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.setOfferStatus(item.idBundleOffer, "reject")}>
-                                        <FaTimes />
-                                    </button>
-                                </OverlayTrigger>
-                            </>
-                        }
-                    </td>
-                </tr>
+            <tr key={index}>
+                <td className="">{item.idBundle}</td>
+                <td className="">{item.idPsp}</td>
+                <td className="">{this.getDate(item.insertedDate)}</td>
+                <td className="">{this.getStatus(item.acceptedDate, item.rejectionDate)}</td>
+                <td className="text-right">
+                    {
+                        item.acceptedDate == null && item.rejectionDate == null &&
+                        <>
+                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Accetta</Tooltip>}>
+                                <button className="btn btn-success btn-sm mr-1" onClick={() => this.setOfferStatus(item.idBundleOffer, "accept")}>
+                                    <FaCheck />
+                                </button>
+                            </OverlayTrigger>
+                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Rifiuta</Tooltip>}>
+                                <button className="btn btn-danger btn-sm mr-1" onClick={() => this.setOfferStatus(item.idBundleOffer, "reject")}>
+                                    <FaTimes />
+                                </button>
+                            </OverlayTrigger>
+                        </>
+                    }
+                </td>
+            </tr>
         ))
-
     }
 
     render(): React.ReactNode {
@@ -343,9 +331,9 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                         }
                     </div>
                 </div>
-                <BundleSubscriptionModal beUrl={this.state.bundleAttributes} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
+                <BundleSubscriptionModal code={this.state.code} beUrl={this.state.beUrl} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
                 {/*<BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />*/}
-                {/*<CisBundleModal beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />*/}
+                <CiBundleDetailsModal beUrl={this.state.bundleAttributes} show={this.state.showCiBundleDetailsModal} handleClose={this.closeCiBundleDetails} />
             </div>
         )
     }
