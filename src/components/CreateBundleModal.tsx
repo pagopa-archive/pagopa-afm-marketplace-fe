@@ -53,10 +53,6 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
         this.setState({content});
     }
 
-    handleChange(event: any) {
-        console.log("HANDLE CHANGE", event);
-    }
-
     save() {
         const info = toast.info("Salvataggio...");
         axios.post(this.props.beUrl, this.state.content).then((response:any) => {
