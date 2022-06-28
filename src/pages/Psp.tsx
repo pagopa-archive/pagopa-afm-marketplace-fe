@@ -245,7 +245,10 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
             if (response.status != 200) {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
+            }
+            else if (status === "accept") {
+                this.getBundles();
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});

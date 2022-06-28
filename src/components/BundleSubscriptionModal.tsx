@@ -100,7 +100,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
             const url = `${this.props.beUrl}/cis/${this.props.code}/requests`;
             const data = {
                 "idBundle": this.state.bundle.idBundle,
-                "attributes": [this.state.content]
+                "attributes": this.state.content
             }
             axios.post(url, data).then((response:any) => {
                 if (response.status === 201) {
