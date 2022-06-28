@@ -37,8 +37,14 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
         const info = toast.info("Caricamento lista...");
         axios.get(this.props.beUrl).then((response:any) => {
             if (response.status === 200) {
-                this.handleChange(response.data);
-                response.data.ciFiscalCodeList.forEach((ciFiscalCode: string) => this.retrieveDetails(ciFiscalCode));
+                if (this.props.bundle.type === "PUBLIC" || (this.props.bundle.type === "GLOBAL" && response.data.ciFiscalCodeList.length > 0)) {
+                    this.handleChange(response.data);
+                    response.data.ciFiscalCodeList.forEach((ciFiscalCode: string) => this.retrieveDetails(ciFiscalCode));
+                }
+                else if (this.props.bundle.type === "GLOBAL" && response.data.ciFiscalCodeList.length === 0) {
+                    this.handleChange({status: "Nessun EC ha aggiunto attributi."});
+                }
+
             }
             else {
                 if (this.props.bundle.type === "GLOBAL") {
@@ -48,11 +54,11 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
                     this.handleChange(content);
                 }
                 else {
-                    toast.error(response.data.details, {theme: "colored"});
+                    toast.error(response.data.detail, {theme: "colored"});
                 }
             }
-        }).catch(() => {
-            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).catch((err) => {
+            toast.error(err.response.data.detail, {theme: "colored"});
         }).finally(() => {
             toast.dismiss(info);
         });
@@ -65,10 +71,10 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
                 this.handleChangeDetails(response.data);
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
-        }).catch(() => {
-            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).catch((err) => {
+            toast.error(err.response.data.detail, {theme: "colored"});
         }).finally(() => {
             toast.dismiss(info);
         });

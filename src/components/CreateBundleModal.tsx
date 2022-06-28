@@ -60,10 +60,10 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
                 this.props.handleClose("ok");
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
-        }).catch(() => {
-            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).catch((err) => {
+            toast.error(err.response.data.detail, {theme: "colored"});
         }).finally(() => {
             toast.dismiss(info);
         });
