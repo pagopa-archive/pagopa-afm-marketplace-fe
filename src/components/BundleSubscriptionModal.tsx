@@ -40,9 +40,13 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
         this.onShow = this.onShow.bind(this);
     }
 
-    onShow(): void {
-        this.retrieveBundles();
+    componentDidMount(): void {
         this.initializeContent();
+    }
+
+    onShow(): void {
+        this.initializeContent();
+        this.retrieveBundles();
         this.setState({bundle: null});
     }
 
@@ -197,6 +201,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
                         {this.getBundleRows()}
                         </tbody>
                     </Table>
+                    <p>Attributi da aggiungere.</p>
                     <Editor value={this.state.content} onChange={this.handleChange} />
                 </Modal.Body>
                 <Modal.Footer>

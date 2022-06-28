@@ -30,6 +30,10 @@ export default class BundleRequestModal extends React.Component<IProps, IState> 
         this.onShow = this.onShow.bind(this);
     }
 
+    componentDidMount(): void {
+        this.initializeContent();
+    }
+
     onShow(): void {
         this.initializeContent();
     }

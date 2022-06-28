@@ -30,6 +30,10 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
         this.onShow = this.onShow.bind(this);
     }
 
+    componentDidMount(): void {
+        this.initializeContent();
+    }
+
     onShow(): void {
         this.initializeContent();
     }
@@ -48,7 +52,7 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
             "paymentMethod": "CP",
             "touchpoint": "IO",
             "type": "GLOBAL",
-            "transferCategoryList": [],
+            "transferCategoryList": ["9/0115111TS/", "9/0201115AP/"],
             "validityDateFrom": null,
             "validityDateTo": null
         };

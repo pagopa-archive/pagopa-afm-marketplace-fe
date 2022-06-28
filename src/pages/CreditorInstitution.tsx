@@ -229,6 +229,9 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         axios.post(url).then((response:any) => {
             if (response.status !== 200) {
                 toast.error(response.data.detail, {theme: "colored"});
+                if (status === "accept") {
+                    this.getBundles();
+                }
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
