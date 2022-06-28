@@ -42,8 +42,8 @@ export default class Psp extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const baseUrl = getConfig("BE_HOST") as string;
-        const basePath = getConfig("BE_BASEPATH") as string;
+        const baseUrl = getConfig("AFM_MARKETPLACE_HOST") as string;
+        const basePath = getConfig("AFM_MARKETPLACE_BASEPATH") as string;
         const code = "1234567890";
         this.state = {
             code: code,
@@ -224,7 +224,7 @@ export default class Psp extends React.Component<IProps, IState> {
 
                     </td>
                 </tr>
-        ))
+        ));
     }
 
     getStatus(accepted: string, rejected: string) {
@@ -244,7 +244,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const url = `${this.state.beUrl}/psps/${this.state.code}/requests/${idBundleRequest}/${status}`;
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 toast.error(response.data.detail, {theme: "colored"});
             }
             else if (status === "accept") {
@@ -339,7 +339,7 @@ export default class Psp extends React.Component<IProps, IState> {
 								<tr>
 									<th className="">Nome pacchetto</th>
 									<th className="">EC richiedente</th>
-									<th className="">Attributi configurati dall'EC</th>
+									<th className="">Attributi configurati dall&apos;EC</th>
 									<th className="">Stato</th>
 									<th className="text-right"/>
 								</tr>

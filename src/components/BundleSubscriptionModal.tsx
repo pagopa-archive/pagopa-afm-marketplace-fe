@@ -36,9 +36,10 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
 
         this.handleBundle = this.handleBundle.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.onShow = this.onShow.bind(this);
     }
 
-    componentDidMount(): void {
+    onShow(): void {
         this.retrieveBundles();
         this.initializeContent();
         this.setState({bundle: null});
@@ -171,7 +172,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
 
     render(): React.ReactNode {
         return (
-            <Modal size="xl" show={this.props.show} onHide={() => this.props.handleClose("ko")}>
+            <Modal size="xl" show={this.props.show} onHide={() => this.props.handleClose("ko")} onShow={this.onShow}>
                 <Modal.Header closeButton>
                     <Modal.Title>Configurazione pacchetto</Modal.Title>
                 </Modal.Header>

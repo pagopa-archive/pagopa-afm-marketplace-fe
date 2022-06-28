@@ -8,7 +8,7 @@ echo "window._env_ = {" >> ./src/env-config.js
 # Loop on environment variables prefixed with
 # be_ and add them to env-config.js
 
-for be_var in $(env | grep -i be_); do
+for be_var in $(env | grep -i afm_marketplace_); do
     varname=$(printf '%s\n' "$be_var" | sed -e 's/=.*//')
     varvalue=$(printf '%s\n' "$be_var" | sed -e 's/^[^=]*=//')
 

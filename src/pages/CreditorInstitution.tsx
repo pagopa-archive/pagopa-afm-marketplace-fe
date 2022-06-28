@@ -38,8 +38,8 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     constructor(props: IProps) {
         super(props);
 
-        const baseUrl = getConfig("BE_HOST") as string;
-        const basePath = getConfig("BE_BASEPATH") as string;
+        const baseUrl = getConfig("AFM_MARKETPLACE_HOST") as string;
+        const basePath = getConfig("AFM_MARKETPLACE_BASEPATH") as string;
         const code = "12345";
         this.state = {
             code: code,
@@ -274,7 +274,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                         <h2>EC - {this.state.code}</h2>
                     </div>
                     <div className="col-md-10">
-                        <h3>Lista Pacchetti</h3>
+                        <h3>Lista Sottoscrizioni</h3>
                     </div>
                     <div className="col-md-2 text-right">
                         <Button onClick={this.openBundleSubscription}>Nuovo <FaPlus/></Button>
@@ -304,7 +304,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                         </Table>
                     </div>
                     <div className="col-md-12 mt-5">
-                        <h3>Offerte Pacchetti Privati</h3>
+                        <h3>Offerte di pacchetti privati da parte dei PSP</h3>
                     </div>
                     <div className="col-md-12">
                         {

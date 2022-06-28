@@ -26,9 +26,10 @@ export default class BundleOfferModal extends React.Component<IProps, IState> {
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.onShow = this.onShow.bind(this);
     }
 
-    componentDidMount(): void {
+    onShow(): void {
         this.initializeContent();
     }
 
@@ -64,7 +65,7 @@ export default class BundleOfferModal extends React.Component<IProps, IState> {
 
     render(): React.ReactNode {
         return (
-            <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")}>
+            <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")} onShow={this.onShow}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea pacchetto</Modal.Title>
                 </Modal.Header>
