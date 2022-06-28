@@ -1,6 +1,6 @@
 {
   "name": "pagopa-afm-marketplace-fe",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "scripts": {
     "envconfig": "chmod +x envconfig.sh && . ./envconfig.sh",
