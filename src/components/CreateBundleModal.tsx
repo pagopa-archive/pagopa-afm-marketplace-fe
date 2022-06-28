@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
@@ -23,7 +24,7 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
 
         this.state = {
             content: null
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.onShow = this.onShow.bind(this);

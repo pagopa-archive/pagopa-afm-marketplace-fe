@@ -5,6 +5,7 @@ import {
     FaLock,
     FaLockOpen,
 } from "react-icons/fa";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
@@ -32,7 +33,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
             bundle: null,
             bundles: [],
             content: null
-        }
+        };
 
         this.handleBundle = this.handleBundle.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -79,9 +80,9 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
         if (this.state.bundle == null) {
             toast.warning("Selezionare un pacchetto", {theme: "colored"});
         }
-        else if (this.state.bundle.type == "GLOBAL") {
+        else if (this.state.bundle.type === "GLOBAL") {
             const info = toast.info("Salvataggio...");
-            const url = `${this.props.beUrl}/cis/${this.props.code}/bundles/${this.state.bundle.idBundle}/attributes`
+            const url = `${this.props.beUrl}/cis/${this.props.code}/bundles/${this.state.bundle.idBundle}/attributes`;
             axios.post(url, this.state.content[0]).then((response:any) => {
                 if (response.status === 201) {
                     toast.success("Sottoscrizione al pacchetto globale effettuata con successo", {theme: "colored"});
@@ -96,13 +97,13 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
                 toast.dismiss(info);
             });
         }
-        else if (this.state.bundle.type == "PUBLIC") {
+        else if (this.state.bundle.type === "PUBLIC") {
             const info = toast.info("Salvataggio...");
             const url = `${this.props.beUrl}/cis/${this.props.code}/requests`;
             const data = {
                 "idBundle": this.state.bundle.idBundle,
                 "attributes": this.state.content
-            }
+            };
             axios.post(url, data).then((response:any) => {
                 if (response.status === 201) {
                     toast.success("Richiesta di sottoscrizione al pacchetto pubblico effettuata con successo", {theme: "colored"});
@@ -120,7 +121,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
     }
 
     getDate(date: string) {
-        return date == null ? "?" : new Date(date).toLocaleDateString()
+        return date == null ? "?" : new Date(date).toLocaleDateString();
     }
 
     getAmount(amount: number) {
@@ -128,7 +129,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
     }
 
     getLabels(labelList: any) {
-        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
+        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>);
     }
 
     isActive(bundle: any) {
@@ -167,7 +168,7 @@ export default class BundleSubscriptionModal extends React.Component<IProps, ISt
                     <td className="">{item.touchpoint}</td>
                     <td className="">{this.getLabels(item.transferCategoryList)}</td>
                 </tr>
-        ))
+        ));
     }
 
     render(): React.ReactNode {

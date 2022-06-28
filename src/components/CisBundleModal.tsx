@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
@@ -26,7 +27,7 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
         this.state = {
             content: {},
             details: {}
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeDetails = this.handleChangeDetails.bind(this);
@@ -50,7 +51,7 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
                 if (this.props.bundle.type === "GLOBAL") {
                     const content = {
                         status: "Tutti gli EC fanno parte di questo pacchetto. Nessun EC ha aggiunto attributi personalizzati."
-                    }
+                    };
                     this.handleChange(content);
                 }
                 else {

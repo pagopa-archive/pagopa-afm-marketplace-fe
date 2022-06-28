@@ -10,8 +10,8 @@ import {
     FaTimes,
 } from "react-icons/fa";
 import {toast} from "react-toastify";
-import {getConfig} from "../util/config"
 import axios from "axios";
+import {getConfig} from "../util/config";
 import BundleSubscriptionModal from "../components/BundleSubscriptionModal";
 import CiBundleDetailsModal from "../components/CiBundleDetailsModal";
 
@@ -21,6 +21,7 @@ interface IProps {
     };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IState {
     beUrl: string;
     code: string;
@@ -42,7 +43,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const basePath = getConfig("AFM_MARKETPLACE_BASEPATH") as string;
         const code = "12345";
         this.state = {
-            code: code,
+            code,
             bundles: [],
             bundleOffers: [],
             showCiBundleDetailsModal: false,
@@ -72,7 +73,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         if (status === "ok") {
             this.getBundles();
         }
-    }
+    };
 
     openCiBundleDetails(idBundle: string) {
         const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", idBundle);
@@ -84,13 +85,13 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         if (status === "ok") {
             this.getBundles();
         }
-    }
+    };
 
     getBundles() {
         const info = toast.info("Caricamento...");
         axios.get(this.state.getBundles).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundles: response.data.bundles})
+                this.setState({bundles: response.data.bundles});
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -102,8 +103,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         });
     }
 
-    removeBundle(idBundleOffer: string) {
-        console.log("TODO remove bundle offer", idBundleOffer);
+    // removeBundle(idBundleOffer: string) {
         // const url = `${this.state.beUrl}/psps/${this.state.code}/bundles/${idBundle}`;
         // const info = toast.info("Rimozione in corso...");
         // axios.delete(url).then((response:any) => {
@@ -118,13 +118,13 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         // }).finally(() => {
         //     toast.dismiss(info);
         // });
-    }
+    // }
 
     getBundleOffers() {
         const info = toast.info("Caricamento...");
         axios.get(this.state.getBundleOffers).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundleOffers: response.data.offers})
+                this.setState({bundleOffers: response.data.offers});
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -137,7 +137,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     }
 
     getDate(date: string) {
-        return date == null ? "?" : new Date(date).toLocaleDateString()
+        return date == null ? "?" : new Date(date).toLocaleDateString();
     }
 
     getAmount(amount: number) {
@@ -145,7 +145,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
     }
 
     getLabels(labelList: any) {
-        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
+        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>);
     }
 
     getBundleRows() {
@@ -184,30 +184,30 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                 <td className="">{this.getDate(item.lastUpdatedDate)}</td>
                 <td className="text-right">
                     {
-                        item.type != "PRIVATE" &&
+                        item.type !== "PRIVATE" &&
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Gestisci attributi</Tooltip>}>
                             <button disabled={item.validityDateTo != null} className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCiBundleDetails(item.idBundle)}>
                                 <FaCogs />
                             </button>
                         </OverlayTrigger>
                     }
-                    {/*{*/}
-                    {/*    item.type === "PUBLIC" &&*/}
-                    {/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
-                    {/*        <button className="btn btn-primary btn-sm mr-1">*/}
-                    {/*			<FaQuestionCircle />*/}
-                    {/*        </button>*/}
-                    {/*	</OverlayTrigger>*/}
-                    {/*}*/}
-                    {/*<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>*/}
-                    {/*    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>*/}
-                    {/*        <FaTrash />*/}
-                    {/*    </button>*/}
-                    {/*</OverlayTrigger>*/}
+                    {/* { */}
+                    {/*    item.type === "PUBLIC" && */}
+                    {/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}> */}
+                    {/*        <button className="btn btn-primary btn-sm mr-1"> */}
+                    {/*			<FaQuestionCircle /> */}
+                    {/*        </button> */}
+                    {/*	</OverlayTrigger> */}
+                    {/* } */}
+                    {/* <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}> */}
+                    {/*    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}> */}
+                    {/*        <FaTrash /> */}
+                    {/*    </button> */}
+                    {/* </OverlayTrigger> */}
 
                 </td>
             </tr>
-        ))
+        ));
     }
 
     getStatus(accepted: string, rejected: string) {
@@ -227,7 +227,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const url = `${this.state.getBundleOffers}/${idBundleOffer}/${status}`;
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
@@ -263,7 +263,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                     }
                 </td>
             </tr>
-        ))
+        ));
     }
 
     render(): React.ReactNode {
@@ -332,9 +332,9 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                     </div>
                 </div>
                 <BundleSubscriptionModal code={this.state.code} beUrl={this.state.beUrl} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
-                {/*<BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />*/}
+                {/* <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} /> */}
                 <CiBundleDetailsModal beUrl={this.state.bundleAttributes} show={this.state.showCiBundleDetailsModal} handleClose={this.closeCiBundleDetails} />
             </div>
-        )
+        );
     }
 }
