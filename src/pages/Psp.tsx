@@ -12,8 +12,8 @@ import {
     FaTrash,
 } from "react-icons/fa";
 import {toast} from "react-toastify";
-import {getConfig} from "../util/config"
 import axios from "axios";
+import {getConfig} from "../util/config";
 import CreateBundleModal from "../components/CreateBundleModal";
 import BundleOfferModal from "../components/BundleOfferModal";
 import CisBundleModal from "../components/CisBundleModal";
@@ -26,7 +26,7 @@ interface IProps {
 
 interface IState {
     beUrl: string;
-    bundle: any,
+    bundle: any;
     bundles: [];
     code: string;
     cisBundle: string;
@@ -46,7 +46,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const basePath = getConfig("BE_BASEPATH") as string;
         const code = "1234567890";
         this.state = {
-            code: code,
+            code,
             bundle: null,
             bundles: [],
             bundleRequests: [],
@@ -75,7 +75,7 @@ export default class Psp extends React.Component<IProps, IState> {
 
     closeBundleOffer = () => {
         this.setState({showOfferBundleModal: false});
-    }
+    };
 
     openCisBundle(bundle: any) {
         const cisBundle = this.state.cisBundle.replace("IDBUNDLE", bundle.idBundle);
@@ -84,7 +84,7 @@ export default class Psp extends React.Component<IProps, IState> {
 
     closeCisBundle = () => {
         this.setState({bundle: null, showCisBundleModal: false});
-    }
+    };
 
     openBundleCreation() {
         this.setState({showCreateBundleModal: true});
@@ -95,20 +95,19 @@ export default class Psp extends React.Component<IProps, IState> {
         if (status === "ok") {
             this.getBundles();
         }
-    }
+    };
 
     getBundles() {
         const url = `${this.state.beUrl}/psps/${this.state.code}/bundles`;
         const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundles: response.data.bundles})
+                this.setState({bundles: response.data.bundles});
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
-            console.error("response")
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
         }).finally(() => {
             toast.dismiss(info);
@@ -120,7 +119,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Rimozione in corso...");
         axios.delete(url).then((response:any) => {
             if (response.status === 200) {
-                this.getBundles()
+                this.getBundles();
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -137,7 +136,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundleRequests: response.data.requests})
+                this.setState({bundleRequests: response.data.requests});
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -150,7 +149,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     getDate(date: string) {
-        return date == null ? "?" : new Date(date).toLocaleDateString()
+        return date == null ? "?" : new Date(date).toLocaleDateString();
     }
 
     getAmount(amount: number) {
@@ -158,7 +157,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     getLabels(labelList: any) {
-        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
+        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>);
     }
 
     getBundleRows() {
@@ -208,14 +207,14 @@ export default class Psp extends React.Component<IProps, IState> {
                                 </button>
                             </OverlayTrigger>
                         }
-                        {/*{*/}
-                        {/*    item.type === "PUBLIC" &&*/}
-						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
-                        {/*        <button className="btn btn-primary btn-sm mr-1">*/}
-						{/*			<FaQuestionCircle />*/}
-                        {/*        </button>*/}
-						{/*	</OverlayTrigger>*/}
-                        {/*}*/}
+                        {/* { */}
+                        {/*    item.type === "PUBLIC" && */}
+						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}> */}
+                        {/*        <button className="btn btn-primary btn-sm mr-1"> */}
+						{/*			<FaQuestionCircle /> */}
+                        {/*        </button> */}
+						{/*	</OverlayTrigger> */}
+                        {/* } */}
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
                             <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>
                                 <FaTrash />
@@ -224,7 +223,7 @@ export default class Psp extends React.Component<IProps, IState> {
 
                     </td>
                 </tr>
-        ))
+        ));
     }
 
     getStatus(accepted: string, rejected: string) {
@@ -244,7 +243,7 @@ export default class Psp extends React.Component<IProps, IState> {
         const url = `${this.state.beUrl}/psps/${this.state.code}/requests/${idBundleRequest}/${status}`;
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
-            if (response.status != 200) {
+            if (response.status !== 200) {
                 toast.error(response.data.detail, {theme: "colored"});
             }
             else if (status === "accept") {
@@ -283,7 +282,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         }
                     </td>
                 </tr>
-        ))
+        ));
 
     }
 
@@ -339,7 +338,7 @@ export default class Psp extends React.Component<IProps, IState> {
 								<tr>
 									<th className="">Nome pacchetto</th>
 									<th className="">EC richiedente</th>
-									<th className="">Attributi configurati dall'EC</th>
+									<th className="">Attributi configurati dall&apos;EC</th>
 									<th className="">Stato</th>
 									<th className="text-right"/>
 								</tr>
@@ -355,6 +354,6 @@ export default class Psp extends React.Component<IProps, IState> {
                 <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />
                 <CisBundleModal bundle={this.state.bundle} beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
             </div>
-        )
+        );
     }
 }

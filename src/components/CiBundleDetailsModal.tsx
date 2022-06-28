@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {toast} from "react-toastify";
 import axios from "axios";
@@ -24,7 +25,7 @@ export default class CiBundleDetailsModal extends React.Component<IProps, IState
         this.state = {
             content: {},
             details: {}
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.removeAll = this.removeAll.bind(this);
@@ -57,11 +58,11 @@ export default class CiBundleDetailsModal extends React.Component<IProps, IState
     }
 
     removeAll(): void {
-        axios.all(this.state.content.attributes.map((attribute: any) => this.remove(attribute.idBundleAttribute))).then(
+        void axios.all(this.state.content.attributes.map((attribute: any) => this.remove(attribute.idBundleAttribute))).then(
             () => {
                 this.props.handleClose("ok");
             }
-        )
+        );
     }
 
     render(): React.ReactNode {
