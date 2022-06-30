@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
 import {
     FaCheck,
+    FaCogs,
     FaEye,
     FaGlobe,
     FaLock,
@@ -15,6 +16,7 @@ import {toast} from "react-toastify";
 import axios from "axios";
 import {getConfig} from "../util/config";
 import CreateBundleModal from "../components/CreateBundleModal";
+import EditBundleModal from "../components/EditBundleModal";
 import BundleOfferModal from "../components/BundleOfferModal";
 import CisBundleModal from "../components/CisBundleModal";
 
@@ -31,10 +33,12 @@ interface IState {
     code: string;
     cisBundle: string;
     createBundle: string;
+    editBundle: string;
     offerBundle: string;
     bundleRequests: [];
     showCisBundleModal: boolean;
     showCreateBundleModal: boolean;
+    showEditBundleModal: boolean;
     showOfferBundleModal: boolean;
 }
 
@@ -52,14 +56,17 @@ export default class Psp extends React.Component<IProps, IState> {
             bundleRequests: [],
             showCisBundleModal: false,
             showCreateBundleModal: false,
+            showEditBundleModal: false,
             showOfferBundleModal: false,
             beUrl: baseUrl + basePath,
             cisBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/creditorInstitutions`,
             createBundle: `${baseUrl}${basePath}/psps/${code}/bundles`,
+            editBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE`,
             offerBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/offers`,
         };
 
         this.openBundleCreation = this.openBundleCreation.bind(this);
+        this.openBundleEditing = this.openBundleEditing.bind(this);
         this.setRequestStatus = this.setRequestStatus.bind(this);
     }
 
@@ -69,7 +76,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     openOfferBundle(idBundle: string) {
-        const offerBundle = this.state.offerBundle.replace("IDBUNDLE", idBundle);
+        const offerBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/offers`
         this.setState({offerBundle, showOfferBundleModal: true});
     }
 
@@ -78,7 +85,7 @@ export default class Psp extends React.Component<IProps, IState> {
     };
 
     openCisBundle(bundle: any) {
-        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", bundle.idBundle);
+        const cisBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/creditorInstitutions`;
         this.setState({cisBundle, bundle, showCisBundleModal: true});
     }
 
@@ -92,6 +99,18 @@ export default class Psp extends React.Component<IProps, IState> {
 
     closeBundleCreation = (status: string) => {
         this.setState({showCreateBundleModal: false});
+        if (status === "ok") {
+            this.getBundles();
+        }
+    };
+
+    openBundleEditing(bundle: any) {
+        const editBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}`
+        this.setState({editBundle, bundle, showEditBundleModal: true});
+    }
+
+    closeBundleEditing = (status: string) => {
+        this.setState({showEditBundleModal: false});
         if (status === "ok") {
             this.getBundles();
         }
@@ -215,6 +234,12 @@ export default class Psp extends React.Component<IProps, IState> {
                         {/*        </button> */}
 						{/*	</OverlayTrigger> */}
                         {/* } */}
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Modifica</Tooltip>}>
+                            <button className="btn btn-warning btn-sm mr-1" onClick={() => this.openBundleEditing(item)}>
+                                <FaCogs />
+                            </button>
+                        </OverlayTrigger>
+
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
                             <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>
                                 <FaTrash />
@@ -323,7 +348,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         </Table>
                     </div>
                     <div className="col-md-12 mt-5">
-                        <h3>Richieste Pacchetti Pubblici</h3>
+                        <h3>Richieste di sottoscrizione ai pacchetti pubblici da parte degli EC</h3>
                     </div>
                     <div className="col-md-12">
                         {
@@ -353,6 +378,7 @@ export default class Psp extends React.Component<IProps, IState> {
                 <CreateBundleModal beUrl={this.state.createBundle} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
                 <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />
                 <CisBundleModal bundle={this.state.bundle} beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
+                <EditBundleModal bundle={this.state.bundle} beUrl={this.state.editBundle} show={this.state.showEditBundleModal} handleClose={this.closeBundleEditing} />
             </div>
         );
     }
