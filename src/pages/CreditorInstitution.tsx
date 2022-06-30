@@ -27,6 +27,7 @@ interface IProps {
 interface IState {
     beUrl: string;
     code: string;
+    bundle: any;
     bundleAttributes: string;
     getBundles: string;
     getBundleOffers: string;
@@ -48,6 +49,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         this.state = {
             code,
             ciBundleAttributes: {},
+            bundle: null,
             bundles: [],
             bundleOffers: [],
             showCiBundleDetailsModal: false,
@@ -311,6 +313,10 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                         <Button onClick={this.openBundleSubscription}>Nuovo <FaPlus/></Button>
                     </div>
                     <div className="col-md-12">
+                        <p className="alert alert-primary">
+                            Di seguito vengono mostrate le sottoscrizioni a cui adesisce l'EC.
+                            I pacchetti globali senza configurazioni aggiuntive non sono mostrati.
+                        </p>
                         <Table hover responsive size="sm" className="xsd-table">
                             <thead>
                             <tr>
