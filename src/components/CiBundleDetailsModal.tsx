@@ -72,6 +72,9 @@ export default class CiBundleDetailsModal extends React.Component<IProps, IState
                     <Modal.Title>Dettagli pacchetto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <p className="alert alert-primary">
+                        Per modificare gli attributi di un pacchetto pubblico occorre inoltrare esplicita richiesta al PSP
+                    </p>
                     <pre className="code">{JSON.stringify(this.state.content, undefined, 2)}</pre>
 
                     <div className={"text-right"}>

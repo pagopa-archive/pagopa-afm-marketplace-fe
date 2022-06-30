@@ -8,12 +8,14 @@ import {
     FaLockOpen,
     FaPlus,
     FaTimes,
+    FaTrash,
 } from "react-icons/fa";
 import {toast} from "react-toastify";
 import axios from "axios";
 import {getConfig} from "../util/config";
 import BundleSubscriptionModal from "../components/BundleSubscriptionModal";
 import CiBundleDetailsModal from "../components/CiBundleDetailsModal";
+import EditCiBundleDetailsModal from "../components/EditCiBundleDetailsModal";
 
 interface IProps {
     history: {
@@ -28,6 +30,7 @@ interface IState {
     bundleAttributes: string;
     getBundles: string;
     getBundleOffers: string;
+    ciBundleAttributes: {};
     bundles: [];
     bundleOffers: [];
     showCiBundleDetailsModal: boolean;
@@ -44,6 +47,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const code = "12345";
         this.state = {
             code,
+            ciBundleAttributes: {},
             bundles: [],
             bundleOffers: [],
             showCiBundleDetailsModal: false,
@@ -75,9 +79,33 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         }
     };
 
-    openCiBundleDetails(idBundle: string) {
-        const bundleAttributes = this.state.bundleAttributes.replace("IDBUNDLE", idBundle);
-        this.setState({bundleAttributes, showCiBundleDetailsModal: true});
+    loadCiBundleAttributes(url: string): void {
+        const info = toast.info("Caricamento...");
+        axios.get(url).then((response:any) => {
+            if (response.status === 200) {
+                this.setState({ciBundleAttributes: response.data, showCiBundleDetailsModal: true});
+            }
+            else {
+                toast.error(response.data.detail, {theme: "colored"});
+            }
+        }).catch(() => {
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info);
+            this.render();
+        });
+    }
+
+    openCiBundleDetails(bundle: any) {
+        this.setState({bundle});
+        const bundleAttributes = `${this.state.beUrl}/cis/${this.state.code}/bundles/${bundle.idBundle}/attributes`;
+        if (bundle.type === "GLOBAL") {
+            this.setState({bundleAttributes});
+            this.loadCiBundleAttributes(bundleAttributes);
+        }
+        else {
+            this.setState({bundleAttributes, showCiBundleDetailsModal: true});
+        }
     }
 
     closeCiBundleDetails = (status: string) => {
@@ -103,22 +131,22 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         });
     }
 
-    // removeBundle(idBundleOffer: string) {
-        // const url = `${this.state.beUrl}/psps/${this.state.code}/bundles/${idBundle}`;
-        // const info = toast.info("Rimozione in corso...");
-        // axios.delete(url).then((response:any) => {
-        //     if (response.status === 200) {
-        //         this.getBundles()
-        //     }
-        //     else {
-        //         toast.error(response.data.detail, {theme: "colored"});
-        //     }
-        // }).catch(() => {
-        //     toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
-        // }).finally(() => {
-        //     toast.dismiss(info);
-        // });
-    // }
+    removeCiBundle(idCiBundle: string) {
+        const url = `${this.state.beUrl}/cis/${this.state.code}/bundles/${idCiBundle}`;
+        const info = toast.info("Rimozione in corso...");
+        axios.delete(url).then((response:any) => {
+            if (response.status === 200) {
+                this.getBundles()
+            }
+            else {
+                toast.error(response.data.detail, {theme: "colored"});
+            }
+        }).catch(() => {
+            toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
+        }).finally(() => {
+            toast.dismiss(info);
+        });
+    }
 
     getBundleOffers() {
         const info = toast.info("Caricamento...");
@@ -186,7 +214,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                     {
                         item.type !== "PRIVATE" &&
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Gestisci attributi</Tooltip>}>
-                            <button disabled={item.validityDateTo != null} className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCiBundleDetails(item.idBundle)}>
+                            <button disabled={item.validityDateTo != null} className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCiBundleDetails(item)}>
                                 <FaCogs />
                             </button>
                         </OverlayTrigger>
@@ -199,11 +227,11 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                     {/*        </button> */}
                     {/*	</OverlayTrigger> */}
                     {/* } */}
-                    {/* <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}> */}
-                    {/*    <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}> */}
-                    {/*        <FaTrash /> */}
-                    {/*    </button> */}
-                    {/* </OverlayTrigger> */}
+                     <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
+                        <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeCiBundle(item.idCiBundle)}>
+                            <FaTrash />
+                        </button>
+                     </OverlayTrigger>
 
                 </td>
             </tr>
@@ -336,7 +364,8 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                 </div>
                 <BundleSubscriptionModal code={this.state.code} beUrl={this.state.beUrl} show={this.state.showBundleSubscriptionModal} handleClose={this.closeBundleSubscription} />
                 {/* <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} /> */}
-                <CiBundleDetailsModal beUrl={this.state.bundleAttributes} show={this.state.showCiBundleDetailsModal} handleClose={this.closeCiBundleDetails} />
+                <CiBundleDetailsModal beUrl={this.state.bundleAttributes} show={this.state.showCiBundleDetailsModal && this.state.bundle.type === "PUBLIC"} handleClose={this.closeCiBundleDetails} />
+                <EditCiBundleDetailsModal content={this.state.ciBundleAttributes} beUrl={this.state.bundleAttributes} show={this.state.showCiBundleDetailsModal && this.state.bundle.type === "GLOBAL"} handleClose={this.closeCiBundleDetails} />
             </div>
         );
     }

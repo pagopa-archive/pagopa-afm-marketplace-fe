@@ -75,7 +75,7 @@ export default class Psp extends React.Component<IProps, IState> {
         this.getBundleRequests();
     }
 
-    openOfferBundle(idBundle: string) {
+    openOfferBundle(bundle: any) {
         const offerBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/offers`
         this.setState({offerBundle, showOfferBundleModal: true});
     }
@@ -221,7 +221,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         {
                             item.type === "PRIVATE" &&
 							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Offri ad EC</Tooltip>}>
-                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item.idBundle)}>
+                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item)}>
 									<FaShareSquare />
                                 </button>
                             </OverlayTrigger>
