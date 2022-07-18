@@ -1,8 +1,8 @@
 import { Millisecond } from "italia-ts-commons/lib/units";
 
 export interface IConfig {
-  BE_HOST: string;
-  BE_BASEPATH: string;
+  AFM_MARKETPLACE_HOST: string;
+  AFM_MARKETPLACE_BASEPATH: string;
 }
 
 export function getConfig(param: keyof IConfig): string | Millisecond {

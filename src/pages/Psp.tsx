@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, OverlayTrigger, Table, Tooltip} from "react-bootstrap";
 import {
     FaCheck,
+    FaCogs,
     FaEye,
     FaGlobe,
     FaLock,
@@ -12,9 +13,10 @@ import {
     FaTrash,
 } from "react-icons/fa";
 import {toast} from "react-toastify";
-import {getConfig} from "../util/config"
 import axios from "axios";
+import {getConfig} from "../util/config";
 import CreateBundleModal from "../components/CreateBundleModal";
+import EditBundleModal from "../components/EditBundleModal";
 import BundleOfferModal from "../components/BundleOfferModal";
 import CisBundleModal from "../components/CisBundleModal";
 
@@ -26,14 +28,17 @@ interface IProps {
 
 interface IState {
     beUrl: string;
+    bundle: any;
+    bundles: [];
     code: string;
     cisBundle: string;
     createBundle: string;
+    editBundle: string;
     offerBundle: string;
-    bundles: [];
     bundleRequests: [];
     showCisBundleModal: boolean;
     showCreateBundleModal: boolean;
+    showEditBundleModal: boolean;
     showOfferBundleModal: boolean;
 }
 
@@ -41,23 +46,27 @@ export default class Psp extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const baseUrl = getConfig("BE_HOST") as string;
-        const basePath = getConfig("BE_BASEPATH") as string;
+        const baseUrl = getConfig("AFM_MARKETPLACE_HOST") as string;
+        const basePath = getConfig("AFM_MARKETPLACE_BASEPATH") as string;
         const code = "1234567890";
         this.state = {
-            code: code,
+            code,
+            bundle: null,
             bundles: [],
             bundleRequests: [],
             showCisBundleModal: false,
             showCreateBundleModal: false,
+            showEditBundleModal: false,
             showOfferBundleModal: false,
             beUrl: baseUrl + basePath,
             cisBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/creditorInstitutions`,
             createBundle: `${baseUrl}${basePath}/psps/${code}/bundles`,
+            editBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE`,
             offerBundle: `${baseUrl}${basePath}/psps/${code}/bundles/IDBUNDLE/offers`,
         };
 
         this.openBundleCreation = this.openBundleCreation.bind(this);
+        this.openBundleEditing = this.openBundleEditing.bind(this);
         this.setRequestStatus = this.setRequestStatus.bind(this);
     }
 
@@ -65,6 +74,24 @@ export default class Psp extends React.Component<IProps, IState> {
         this.getBundles();
         this.getBundleRequests();
     }
+
+    openOfferBundle(bundle: any) {
+        const offerBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/offers`
+        this.setState({offerBundle, showOfferBundleModal: true});
+    }
+
+    closeBundleOffer = () => {
+        this.setState({showOfferBundleModal: false});
+    };
+
+    openCisBundle(bundle: any) {
+        const cisBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/creditorInstitutions`;
+        this.setState({cisBundle, bundle, showCisBundleModal: true});
+    }
+
+    closeCisBundle = () => {
+        this.setState({bundle: null, showCisBundleModal: false});
+    };
 
     openBundleCreation() {
         this.setState({showCreateBundleModal: true});
@@ -75,38 +102,31 @@ export default class Psp extends React.Component<IProps, IState> {
         if (status === "ok") {
             this.getBundles();
         }
+    };
+
+    openBundleEditing(bundle: any) {
+        const editBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}`
+        this.setState({editBundle, bundle, showEditBundleModal: true});
     }
 
-    openOfferBundle(idBundle: string) {
-        const offerBundle = this.state.offerBundle.replace("IDBUNDLE", idBundle);
-        this.setState({offerBundle, showOfferBundleModal: true});
-    }
-
-    closeBundleOffer = () => {
-        this.setState({showOfferBundleModal: false});
-    }
-
-    openCisBundle(idBundle: string) {
-        const cisBundle = this.state.cisBundle.replace("IDBUNDLE", idBundle);
-        this.setState({cisBundle, showCisBundleModal: true});
-    }
-
-    closeCisBundle = () => {
-        this.setState({showCisBundleModal: false});
-    }
+    closeBundleEditing = (status: string) => {
+        this.setState({showEditBundleModal: false});
+        if (status === "ok") {
+            this.getBundles();
+        }
+    };
 
     getBundles() {
         const url = `${this.state.beUrl}/psps/${this.state.code}/bundles`;
         const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundles: response.data.bundles})
+                this.setState({bundles: response.data.bundles});
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
-            console.error("response")
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
         }).finally(() => {
             toast.dismiss(info);
@@ -118,10 +138,10 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Rimozione in corso...");
         axios.delete(url).then((response:any) => {
             if (response.status === 200) {
-                this.getBundles()
+                this.getBundles();
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -135,10 +155,10 @@ export default class Psp extends React.Component<IProps, IState> {
         const info = toast.info("Caricamento...");
         axios.get(url).then((response:any) => {
             if (response.status === 200) {
-                this.setState({bundleRequests: response.data.requests})
+                this.setState({bundleRequests: response.data.requests});
             }
             else {
-                toast.error(response.data.details, {theme: "colored"});
+                toast.error(response.data.detail, {theme: "colored"});
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -148,7 +168,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     getDate(date: string) {
-        return date == null ? "?" : new Date(date).toLocaleDateString()
+        return date == null ? "?" : new Date(date).toLocaleDateString();
     }
 
     getAmount(amount: number) {
@@ -156,7 +176,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     getLabels(labelList: any) {
-        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>)
+        return labelList.map((label: string, index: number) => <span className="badge badge-primary mr-1" key={index}>{label}</span>);
     }
 
     getBundleRows() {
@@ -193,30 +213,33 @@ export default class Psp extends React.Component<IProps, IState> {
                     <td className="">{this.getDate(item.insertedDate)}</td>
                     <td className="">{this.getDate(item.lastUpdatedDate)}</td>
                     <td className="text-right">
-                        {
-                            item.type != "GLOBAL" &&
-                            <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
-                                <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item.idBundle)}>
-								    <FaEye />
-								</button>
-							</OverlayTrigger>
-                        }
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza EC aderenti</Tooltip>}>
+                            <button className="btn btn-secondary btn-sm mr-1" onClick={() => this.openCisBundle(item)}>
+                                <FaEye />
+                            </button>
+                        </OverlayTrigger>
                         {
                             item.type === "PRIVATE" &&
 							<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Offri ad EC</Tooltip>}>
-                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item.idBundle)}>
+                                <button className="btn btn-primary btn-sm mr-1" onClick={() => this.openOfferBundle(item)}>
 									<FaShareSquare />
                                 </button>
                             </OverlayTrigger>
                         }
-                        {/*{*/}
-                        {/*    item.type === "PUBLIC" &&*/}
-						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}>*/}
-                        {/*        <button className="btn btn-primary btn-sm mr-1">*/}
-						{/*			<FaQuestionCircle />*/}
-                        {/*        </button>*/}
-						{/*	</OverlayTrigger>*/}
-                        {/*}*/}
+                        {/* { */}
+                        {/*    item.type === "PUBLIC" && */}
+						{/*	<OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Visualizza richieste EC</Tooltip>}> */}
+                        {/*        <button className="btn btn-primary btn-sm mr-1"> */}
+						{/*			<FaQuestionCircle /> */}
+                        {/*        </button> */}
+						{/*	</OverlayTrigger> */}
+                        {/* } */}
+                        <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Modifica</Tooltip>}>
+                            <button className="btn btn-warning btn-sm mr-1" onClick={() => this.openBundleEditing(item)}>
+                                <FaCogs />
+                            </button>
+                        </OverlayTrigger>
+
                         <OverlayTrigger placement="top" overlay={<Tooltip id={`tooltip-details-${index}`}>Cancella</Tooltip>}>
                             <button className="btn btn-danger btn-sm mr-1" onClick={() => this.removeBundle(item.idBundle)}>
                                 <FaTrash />
@@ -225,7 +248,7 @@ export default class Psp extends React.Component<IProps, IState> {
 
                     </td>
                 </tr>
-        ))
+        ));
     }
 
     getStatus(accepted: string, rejected: string) {
@@ -245,8 +268,11 @@ export default class Psp extends React.Component<IProps, IState> {
         const url = `${this.state.beUrl}/psps/${this.state.code}/requests/${idBundleRequest}/${status}`;
         const info = toast.info("Operazione in corso...");
         axios.post(url).then((response:any) => {
-            if (response.status != 200) {
-                toast.error(response.data.details, {theme: "colored"});
+            if (response.status !== 200) {
+                toast.error(response.data.detail, {theme: "colored"});
+            }
+            else if (status === "accept") {
+                this.getBundles();
             }
         }).catch(() => {
             toast.error("Operazione non avvenuta a causa di un errore", {theme: "colored"});
@@ -281,7 +307,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         }
                     </td>
                 </tr>
-        ))
+        ));
 
     }
 
@@ -322,7 +348,7 @@ export default class Psp extends React.Component<IProps, IState> {
                         </Table>
                     </div>
                     <div className="col-md-12 mt-5">
-                        <h3>Richieste Pacchetti Pubblici</h3>
+                        <h3>Richieste di sottoscrizione ai pacchetti pubblici da parte degli EC</h3>
                     </div>
                     <div className="col-md-12">
                         {
@@ -337,7 +363,7 @@ export default class Psp extends React.Component<IProps, IState> {
 								<tr>
 									<th className="">Nome pacchetto</th>
 									<th className="">EC richiedente</th>
-									<th className="">Attributi configurati dall'EC</th>
+									<th className="">Attributi configurati dall&apos;EC</th>
 									<th className="">Stato</th>
 									<th className="text-right"/>
 								</tr>
@@ -351,8 +377,9 @@ export default class Psp extends React.Component<IProps, IState> {
                 </div>
                 <CreateBundleModal beUrl={this.state.createBundle} show={this.state.showCreateBundleModal} handleClose={this.closeBundleCreation} />
                 <BundleOfferModal beUrl={this.state.offerBundle} show={this.state.showOfferBundleModal} handleClose={this.closeBundleOffer} />
-                <CisBundleModal beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
+                <CisBundleModal bundle={this.state.bundle} beUrl={this.state.cisBundle} show={this.state.showCisBundleModal} handleClose={this.closeCisBundle} />
+                <EditBundleModal bundle={this.state.bundle} beUrl={this.state.editBundle} show={this.state.showEditBundleModal} handleClose={this.closeBundleEditing} />
             </div>
-        )
+        );
     }
 }

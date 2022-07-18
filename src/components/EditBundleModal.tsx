@@ -7,13 +7,13 @@ import {toast} from "react-toastify";
 import axios from "axios";
 
 interface IProps {
+    bundle: any;
     beUrl: string;
     show: boolean;
     // eslint-disable-next-line @typescript-eslint/ban-types
     handleClose: Function;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface IState {
     content: any;
 }
@@ -23,11 +23,11 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
         super(props);
 
         this.state = {
-            content: null
+            content: this.props.bundle
         };
 
-        this.handleChange = this.handleChange.bind(this);
         this.onShow = this.onShow.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount(): void {
@@ -35,7 +35,7 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
     }
 
     onShow(): void {
-        this.initializeContent();
+        this.handleChange(this.props.bundle);
     }
 
     handleChange(content: any): void {
@@ -61,8 +61,8 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
 
     save() {
         const info = toast.info("Salvataggio...");
-        axios.post(this.props.beUrl, this.state.content).then((response:any) => {
-            if (response.status === 201) {
+        axios.put(this.props.beUrl, this.state.content).then((response:any) => {
+            if (response.status === 200) {
                 this.props.handleClose("ok");
             }
             else {
@@ -76,13 +76,14 @@ export default class CreateBundleModal extends React.Component<IProps, IState> {
     }
 
     render(): React.ReactNode {
+
         return (
             <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")} onShow={this.onShow}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Crea pacchetto</Modal.Title>
+                    <Modal.Title>Modifica pacchetto</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Editor value={this.state.content} onChange={this.handleChange} />
+                    <Editor value={this.props.bundle} onChange={this.handleChange} />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => this.props.handleClose("ko")}>

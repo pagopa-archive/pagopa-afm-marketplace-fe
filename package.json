@@ -11,7 +11,7 @@
     "prebuild:tsc": "tsc --noEmit",
     "prebuild:envconfig": "npm-run-all envconfig",
     "build": "parcel build src/index.html --dist-dir build/release --public-url ./ --no-optimize",
-    "test": "jest --coverage --ci --testResultsProcessor jest-sonar-reporter",
+    "test": "jest --coverage --ci --testResultsProcessor jest-sonar-reporter --passWithNoTests",
     "lint": "eslint -f json -o eslint-report.json . -c .eslintrc.js --ext .ts,.tsx --cache",
     "lint:local": "eslint . -c .eslintrc.js --ext .ts,.tsx --cache",
     "lint-autofix": "eslint . -c .eslintrc.js --ext .ts,.tsx --fix",

@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button } from 'react-bootstrap';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import {toast} from "react-toastify";
@@ -23,12 +24,17 @@ export default class BundleOfferModal extends React.Component<IProps, IState> {
 
         this.state = {
             content: null
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
+        this.onShow = this.onShow.bind(this);
     }
 
     componentDidMount(): void {
+        this.initializeContent();
+    }
+
+    onShow(): void {
         this.initializeContent();
     }
 
@@ -64,7 +70,7 @@ export default class BundleOfferModal extends React.Component<IProps, IState> {
 
     render(): React.ReactNode {
         return (
-            <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")}>
+            <Modal size="lg" show={this.props.show} onHide={() => this.props.handleClose("ko")} onShow={this.onShow}>
                 <Modal.Header closeButton>
                     <Modal.Title>Crea pacchetto</Modal.Title>
                 </Modal.Header>

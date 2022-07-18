@@ -1,11 +1,11 @@
 const SidebarItems = [
     {
-        name: "EC",
-        route: "/cis"
-    },
-    {
         name: "PSP",
         route: "/psps"
+    },
+    {
+        name: "EC",
+        route: "/cis"
     }
 ];
 
