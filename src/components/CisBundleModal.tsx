@@ -62,14 +62,14 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
                     const alert = {
                         show: true,
                         message: "Tutti gli EC sono sottoscitti a questo pacchetto. Nessun EC ha aggiunto attributi personalizzati."
-                    }
+                    };
                     this.setState({alert});
                 }
                 else if (response.data.ciFiscalCodeList.length === 0) {
                     const alert = {
                         show: true,
                         message: "Nessun EC si è sottoscritto al pacchetto."
-                    }
+                    };
                     this.setState({alert});
                 }
             }
@@ -78,7 +78,7 @@ export default class CisBundleModal extends React.Component<IProps, IState> {
                     const alert = {
                         show: true,
                         message: "Tutti gli EC fanno parte di questo pacchetto. Nessun EC ha aggiunto attributi personalizzati."
-                    }
+                    };
                     this.setState({alert});
                 }
                 else {

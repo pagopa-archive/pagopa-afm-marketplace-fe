@@ -31,6 +31,7 @@ interface IState {
     bundleAttributes: string;
     getBundles: string;
     getBundleOffers: string;
+    // eslint-disable-next-line @typescript-eslint/ban-types
     ciBundleAttributes: {};
     bundles: [];
     bundleOffers: [];
@@ -138,7 +139,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
         const info = toast.info("Rimozione in corso...");
         axios.delete(url).then((response:any) => {
             if (response.status === 200) {
-                this.getBundles()
+                this.getBundles();
             }
             else {
                 toast.error(response.data.detail, {theme: "colored"});
@@ -314,7 +315,7 @@ export default class CreditorInstitution extends React.Component<IProps, IState>
                     </div>
                     <div className="col-md-12">
                         <p className="alert alert-primary">
-                            Di seguito vengono mostrate le sottoscrizioni a cui adesisce l'EC.
+                            Di seguito vengono mostrate le sottoscrizioni a cui adesisce l&apos;EC.
                             I pacchetti globali senza configurazioni aggiuntive non sono mostrati.
                         </p>
                         <Table hover responsive size="sm" className="xsd-table">
