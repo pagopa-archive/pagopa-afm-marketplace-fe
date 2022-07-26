@@ -76,7 +76,7 @@ export default class Psp extends React.Component<IProps, IState> {
     }
 
     openOfferBundle(bundle: any) {
-        const offerBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/offers`
+        const offerBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}/offers`;
         this.setState({offerBundle, showOfferBundleModal: true});
     }
 
@@ -105,7 +105,7 @@ export default class Psp extends React.Component<IProps, IState> {
     };
 
     openBundleEditing(bundle: any) {
-        const editBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}`
+        const editBundle = `${this.state.beUrl}/psps/${bundle.idPsp}/bundles/${bundle.idBundle}`;
         this.setState({editBundle, bundle, showEditBundleModal: true});
     }
 

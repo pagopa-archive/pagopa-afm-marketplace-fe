@@ -80,7 +80,8 @@ export default class EditCiBundleDetailsModal extends React.Component<IProps, IS
             maxPaymentAmount: this.state.content.attributes[0].maxPaymentAmount,
             transferCategory: this.state.content.attributes[0].transferCategory,
             transferCategoryRelation: this.state.content.attributes[0].transferCategoryRelation
-        }
+        };
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         axios.put(this.props.beUrl + "/" + this.state.content.attributes[0].idBundleAttribute, data).then((response:any) => {
             if (response.status === 200) {
                 this.props.handleClose("ok");
